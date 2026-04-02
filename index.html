@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0A0E27">
+    <meta name="description" content="Secure, ethical communication with transparent AI">
+    
+    <title>JOYJET | Secure Communication</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/design-system.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layouts.css">
+    
+    <!-- Security -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' wss:;">
+</head>
+<body>
+    <!-- Safety Layer: Consent Modal (Always first in DOM) -->
+    <div id="consent-modal" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="consent-icon">🛡️</div>
+            <h2>AI Ethics Agreement</h2>
+            <p id="consent-text">You are activating AI features. By continuing, you certify you have explicit consent to modify voices/faces in this conversation.</p>
+            <div class="consent-actions">
+                <button class="btn btn-secondary" onclick="Safety.dismissConsent()">Cancel</button>
+                <button class="btn btn-primary" onclick="Safety.acceptConsent()">I Agree & Continue</button>
+            </div>
+            <label class="consent-checkbox">
+                <input type="checkbox" id="consent-remember"> 
+                <span>Remember my choice for 30 days</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Emergency Exit Overlay -->
+    <div id="emergency-exit" class="emergency-overlay" onclick="Safety.killAllEffects()">
+        <div class="emergency-content">
+            <span class="emergency-icon">🛑</span>
+            <span>Tap anywhere to disable AI effects immediately</span>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div id="app" class="app-container">
+        
+        <!-- SCREEN 1: Mode Selector (Entry Gate) -->
+        <section id="screen-entry" class="screen screen-entry active">
+            <div class="entry-brand">
+                <div class="logo">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <rect width="48" height="48" rx="12" fill="#00D9FF"/>
+                        <path d="M14 24C14 18.4772 18.4772 14 24 14C29.5228 14 34 18.4772 34 24" stroke="#0A0E27" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M24 24L24 34" stroke="#0A0E27" stroke-width="4" stroke-linecap="round"/>
+                        <circle cx="24" cy="24" r="3" fill="#0A0E27"/>
+                    </svg>
+                </div>
+                <h1>JOYJET</h1>
+                <p class="tagline">Secure Communication for People You Trust</p>
+                <div class="trust-badge">
+                    <span class="lock-icon">🔒</span>
+                    <span>End-to-End Encrypted</span>
+                </div>
+            </div>
+
+            <div class="entry-actions">
+                <div class="input-group">
+                    <input type="text" id="room-code" placeholder="Enter room code (e.g., SUNNY-42)" maxlength="20">
+                    <button class="btn btn-icon" onclick="App.joinRoom()">
+                        <span>→</span>
+                    </button>
+                </div>
+                
+                <button class="btn btn-primary btn-large" onclick="App.createSafeRoom()">
+                    Create Safe Room
+                </button>
+                
+                <div class="divider">
+                    <span>or continue with</span>
+                </div>
+                
+                <div class="mode-selector">
+                    <button class="mode-card" onclick="App.enterSafeMode()">
+                        <div class="mode-icon">🛡️</div>
+                        <div class="mode-title">Safe Mode</div>
+                        <div class="mode-desc">Private messaging & authentic calls</div>
+                    </button>
+                    
+                    <button class="mode-card mode-studio" onclick="App.enterStudioMode()">
+                        <div class="mode-badge">PRO</div>
+                        <div class="mode-icon">🎨</div>
+                        <div class="mode-title">Studio Mode</div>
+                        <div class="mode-desc">AI tools with consent verification</div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: Conversation List -->
+        <section id="screen-conversations" class="screen">
+            <header class="screen-header">
+                <div class="header-content">
+                    <h2>Messages</h2>
+                    <button class="btn btn-icon" onclick="App.openSettings()" aria-label="Settings">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="search-bar">
+                    <input type="search" placeholder="Search conversations..." id="conversation-search">
+                </div>
+            </header>
+
+            <div class="conversation-list" id="conversation-list">
+                <!-- Pinned -->
+                <div class="section-header">Pinned</div>
+                <div class="conversation-item pinned" onclick="App.openChat('sarah')">
+                    <div class="avatar">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2300D9FF'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='%230A0E27'%3ES%3C/text%3E%3C/svg%3E" alt="Sarah">
+                        <div class="status-indicator online"></div>
+                    </div>
+                    <div class="conversation-meta">
+                        <div class="conversation-header">
+                            <h3>Sarah Chen <span class="verified-badge">✓</span></h3>
+                            <span class="timestamp">2m</span>
+                        </div>
+                        <div class="conversation-preview">
+                            <span class="message-text">See you at 8!</span>
+                            <span class="read-receipt">✓✓</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Direct Messages -->
+                <div class="section-header">Direct Messages</div>
+                <div class="conversation-item" onclick="App.openChat('marcus')">
+                    <div class="avatar">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%238A94A6'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='%23F0F2F5'%3EM%3C/text%3E%3C/svg%3E" alt="Marcus">
+                        <div class="status-indicator offline"></div>
+                    </div>
+                    <div class="conversation-meta">
+                        <div class="conversation-header">
+                            <h3>Marcus Johnson</h3>
+                            <span class="timestamp">1h</span>
+                        </div>
+                        <div class="conversation-preview">
+                            <span class="file-indicator">📄 Project_Brief.pdf</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group -->
+                <div class="section-header">Group Chats</div>
+                <div class="conversation-item" onclick="App.openChat('fire-alarm')">
+                    <div class="avatar group-avatar">
+                        <div class="group-icon">🚨</div>
+                    </div>
+                    <div class="conversation-meta">
+                        <div class="conversation-header">
+                            <h3>Fire Alarm</h3>
+                            <span class="timestamp badge">3</span>
+                        </div>
+                        <div class="conversation-preview">
+                            <span class="sender-name">Alex:</span>
+                            <span class="message-text">Meeting moved to 3pm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="fab" onclick="App.newConversation()" aria-label="New conversation">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+
+            <nav class="bottom-nav">
+                <button class="nav-item active" onclick="App.showScreen('conversations')">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-label">Chats</span>
+                </button>
+                <button class="nav-item" onclick="App.showScreen('calls')">
+                    <span class="nav-icon">📞</span>
+                    <span class="nav-label">Calls</span>
+                </button>
+                <button class="nav-item nav-item-gated" onclick="App.attemptStudioAccess()">
+                    <span class="nav-icon">🎨</span>
+                    <span class="nav-label">Studio</span>
+                    <span class="nav-badge">🔒</span>
+                </button>
+            </nav>
+        </section>
+
+        <!-- SCREEN 3: Chat Interface -->
+        <section id="screen-chat" class="screen">
+            <header class="chat-header">
+                <button class="btn btn-icon back-btn" onclick="App.showScreen('conversations')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                
+                <div class="chat-header-info" onclick="App.viewContactInfo()">
+                    <div class="avatar small">
+                        <img id="chat-avatar" src="" alt="">
+                        <div class="status-indicator online"></div>
+                    </div>
+                    <div class="chat-header-text">
+                        <h3 id="chat-name">Sarah Chen</h3>
+                        <div class="encryption-status">
+                            <span class="lock-icon">🔒</span>
+                            <span>E2EE Verified</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-actions">
+                    <button class="btn btn-icon" onclick="App.startVoiceCall()" aria-label="Voice call">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                    </button>
+                    <button class="btn btn-icon" onclick="App.startVideoCall()" aria-label="Video call">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="date-separator">Today</div>
+                
+                <!-- Received -->
+                <div class="message-group received">
+                    <div class="message-avatar">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2300D9FF'/%3E%3Ctext x='50' y='65' font-size='40' text-anchor='middle' fill='%230A0E27'%3ES%3C/text%3E%3C/svg%3E" alt="Sarah">
+                    </div>
+                    <div class="message-bubbles">
+                        <div class="message">
+                            <div class="message-content">Hey! How are you?</div>
+                            <div class="message-meta">
+                                <span class="timestamp">01:12 PM</span>
+                            </div>
+                        </div>
+                        <div class="message">
+                            <div class="message-content voice-message">
+                                <button class="voice-play" onclick="Chat.toggleVoice(this)">
+                                    <span class="play-icon">▶</span>
+                                </button>
+                                <div class="waveform">
+                                    <div class="waveform-bar"></div>
+                                    <div class="waveform-bar"></div>
+                                    <div class="waveform-bar"></div>
+                                    <div class="waveform-bar"></div>
+                                    <div class="waveform-bar"></div>
+                                </div>
+                                <span class="voice-duration">0:04</span>
+                            </div>
+                            <div class="message-meta">
+                                <span class="timestamp">01:13 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sent -->
+                <div class="message-group sent">
+                    <div class="message-bubbles">
+                        <div class="message">
+                            <div class="message-content">Good! Just working on the new design system.</div>
+                            <div class="message-meta">
+                                <span class="timestamp">01:15 PM</span>
+                                <span class="read-receipt">✓✓</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="attachment-menu" id="attachment-menu">
+                    <button class="attach-btn" onclick="Chat.attachFile()">📎 Document</button>
+                    <button class="attach-btn" onclick="Chat.attachPhoto()">📷 Photo</button>
+                    <button class="attach-btn" onclick="Chat.recordVoice()">🎙️ Voice</button>
+                </div>
+                
+                <div class="input-container">
+                    <button class="btn btn-icon attach-toggle" onclick="Chat.toggleAttachments()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                        </svg>
+                    </button>
+                    
+                    <div class="text-input-wrapper">
+                        <textarea id="message-input" placeholder="Type a message..." rows="1" oninput="Chat.autoResize(this)"></textarea>
+                    </div>
+                    
+                    <button class="btn btn-icon btn-send" onclick="Chat.sendMessage()" id="send-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 4: Video Call (Safety-First Design) -->
+        <section id="screen-call" class="screen screen-call">
+            <!-- Safety Watermark (Always visible when AI active) -->
+            <div id="ai-watermark" class="ai-watermark hidden">
+                <span class="warning-icon">⚠️</span>
+                <span>AI EFFECTS ACTIVE — NOT AUTHENTIC VIDEO</span>
+            </div>
+
+            <!-- Emergency Exit Button (Persistent) -->
+            <button class="emergency-btn" onclick="Safety.killAllEffects()" aria-label="Disable AI effects">
+                <span>Kill Effects</span>
+            </button>
+
+            <div class="call-container">
+                <!-- Remote Video (Full Screen) -->
+                <div class="video-remote">
+                    <video id="remote-video" autoplay playsinline></video>
+                    <div class="video-placeholder" id="remote-placeholder">
+                        <div class="avatar large">
+                            <img id="call-remote-avatar" src="" alt="">
+                        </div>
+                        <div class="connecting-text">Connecting...</div>
+                    </div>
+                </div>
+
+                <!-- Local Video (Picture in Picture) -->
+                <div class="video-local" id="video-local">
+                    <video id="local-video" autoplay playsinline muted></video>
+                    <div class="video-label">You (Mirrored)</div>
+                </div>
+
+                <!-- AI Effects Panel (Collapsible) -->
+                <div class="effects-panel" id="effects-panel">
+                    <div class="effects-header">
+                        <span>Effects</span>
+                        <button class="btn btn-icon" onclick="Call.toggleEffects()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="effects-content">
+                        <div class="effect-category">
+                            <div class="category-title">Filters</div>
+                            <div class="effect-grid">
+                                <button class="effect-btn active" onclick="Call.setEffect('none')">
+                                    <span>None</span>
+                                </button>
+                                <button class="effect-btn" onclick="Call.setEffect('brightness')">
+                                    <span>✨ Bright</span>
+                                </button>
+                                <button class="effect-btn" onclick="Call.setEffect('warm')">
+                                    <span>🌅 Warm</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="effect-category gated" id="ai-effects">
+                            <div class="category-title">
+                                AI Studio
+                                <span class="gate-badge">🔒 Consent Required</span>
+                            </div>
+                            <div class="effect-grid">
+                                <button class="effect-btn disabled" onclick="Safety.requestConsent('avatar')">
+                                    <span>👤 Avatar</span>
+                                </button>
+                                <button class="effect-btn disabled" onclick="Safety.requestConsent('voice')">
+                                    <span>🎙️ Voice FX</span>
+                                </button>
+                            </div>
+                            <p class="effect-warning">Both parties must consent to AI features</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call Controls -->
+            <div class="call-controls">
+                <div class="control-group">
+                    <button class="call-btn" id="btn-mic" onclick="Call.toggleMic()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                        <span>Mute</span>
+                    </button>
+                    
+                    <button class="call-btn" id="btn-camera" onclick="Call.toggleCamera()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                        </svg>
+                        <span>Video</span>
+                    </button>
+                    
+                    <button class="call-btn" onclick="Call.flipCamera()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"></path>
+                            <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="m18 22-3-3 3-3"></path>
+                            <path d="m6 2 3 3-3 3"></path>
+                        </svg>
+                        <span>Flip</span>
+                    </button>
+                    
+                    <button class="call-btn btn-effects" onclick="Call.toggleEffectsPanel()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                        </svg>
+                        <span>FX</span>
+                    </button>
+                </div>
+                
+                <button class="call-btn btn-end" onclick="Call.endCall()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-3.1 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91"></path>
+                    </svg>
+                    <span>End</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Safety Toast Container -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/safety.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/webrtc.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

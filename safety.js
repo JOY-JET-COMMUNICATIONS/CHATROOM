@@ -217,3 +217,62 @@ const Safety = {
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => Safety.init());
+// Add to Safety object:
+
+// Fix: Check for motion preference before animations
+respectsMotionPreference() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+},
+
+// Fix: Proper focus management for modals
+trapFocus(element) {
+  const focusableElements = element.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  
+  const firstFocusable = focusableElements[0];
+  const lastFocusable = focusableElements[focusableElements.length - 1];
+  
+  element.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    
+    if (e.shiftKey) {
+      if (document.activeElement === firstFocusable) {
+        lastFocusable.focus();
+        e.preventDefault();
+      }
+    } else {
+      if (document.activeElement === lastFocusable) {
+        firstFocusable.focus();
+        e.preventDefault();
+      }
+    }
+  });
+  
+  firstFocusable?.focus();
+},
+
+// Fix: Escape key to close modals
+handleEscapeKey() {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.querySelector('.modal[aria-hidden="false"]');
+      if (modal) this.dismissConsent();
+      
+      const emergency = document.getElementById('emergency-exit');
+      if (emergency?.classList.contains('active')) this.killAllEffects();
+    }
+  });
+},
+
+// Fix: Announce to screen readers
+announceToScreenReader(message) {
+  const announcement = document.createElement('div');
+  announcement.setAttribute('role', 'status');
+  announcement.setAttribute('aria-live', 'polite');
+  announcement.className = 'visually-hidden';
+  announcement.textContent = message;
+  
+  document.body.appendChild(announcement);
+  setTimeout(() => announcement.remove(), 1000);
+}

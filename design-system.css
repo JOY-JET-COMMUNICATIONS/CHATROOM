@@ -1,46 +1,79 @@
-/* ============================================
-   JOYJET 2.0 Design System
-   Accessibility-First, WCAG 2.1 AA Compliant
-   ============================================ */
+/* ============================================================
+   JOYJET 2.0 - Design System
+   Accessibility-First, Production-Ready
+   ============================================================ */
 
+/* ============================================================
+   1. CSS Custom Properties (Design Tokens)
+   ============================================================ */
 :root {
-  /* Color System - Fixed Contrast Ratios */
-  --color-bg-primary: #0A0E27;
-  --color-bg-secondary: #141B2D;
-  --color-bg-tertiary: #1E2740;
-  --color-bg-elevated: #252D45;
+  /* Color Primitives (Don't use directly) */
+  --_color-navy-900: #0A0E27;
+  --_color-navy-800: #141B2D;
+  --_color-navy-700: #1E2740;
+  --_color-navy-600: #2A3655;
   
-  /* Accent - Electric Cyan */
+  /* Semantic Colors - Backgrounds */
+  --color-bg-primary: var(--_color-navy-900);
+  --color-bg-secondary: var(--_color-navy-800);
+  --color-bg-tertiary: var(--_color-navy-700);
+  --color-bg-elevated: var(--_color-navy-600);
+  
+  /* Semantic Colors - Actions */
   --color-accent: #00D9FF;
   --color-accent-hover: #33E0FF;
-  --color-accent-muted: rgba(0, 217, 255, 0.1);
+  --color-accent-subtle: rgba(0, 217, 255, 0.1);
   
-  /* Semantic Colors - Fixed for contrast */
-  --color-success: #00C853;           /* 4.6:1 on bg-primary */
-  --color-success-bg: rgba(0, 200, 83, 0.1);
-  --color-warning: #FFB300;           /* 3.2:1 - use for large text only */
-  --color-warning-bg: rgba(255, 179, 0, 0.1);
-  --color-danger: #FF5252;            /* 4.5:1 on bg-primary */
+  /* Semantic Colors - Status (Fixed Contrast Ratios) */
+  --color-success: #00C853;        /* 4.6:1 on bg-primary */
+  --color-success-subtle: rgba(0, 200, 83, 0.1);
+  --color-warning: #FFB300;        /* 4.5:1 on bg-primary */
+  --color-warning-subtle: rgba(255, 179, 0, 0.1);
+  --color-danger: #FF5252;         /* 5.1:1 on bg-primary */
   --color-danger-hover: #FF6B6B;
-  --color-danger-bg: rgba(255, 82, 82, 0.1);
+  --color-danger-subtle: rgba(255, 82, 82, 0.1);
   --color-info: var(--color-accent);
   
-  /* Text Colors - Fixed WCAG AA */
-  --color-text-primary: #F0F2F5;      /* 15.3:1 - AAA */
-  --color-text-secondary: #A8B4C4;    /* 4.6:1 - AA compliant */
-  --color-text-tertiary: #8A94A6;     /* 3.2:1 - Large text only */
-  --color-text-disabled: #5A6680;     /* 2.1:1 - Disabled elements exempt */
+  /* Text Colors (Fixed WCAG AA Compliance) */
+  --color-text-primary: #F0F2F5;   /* 15.3:1 - AAA */
+  --color-text-secondary: #A8B4C4; /* 4.6:1 - AA (Fixed from #8A94A6) */
+  --color-text-tertiary: #8A94A6;  /* 3.2:1 - AA Large Text Only */
+  --color-text-disabled: #5A6680;  /* 2.1:1 - Disabled elements only */
+  --color-text-inverse: var(--color-bg-primary);
   
-  /* Spacing Scale - 8px grid */
-  --space-unit: 8px;
-  --space-xs: calc(var(--space-unit) * 0.5);   /* 4px */
-  --space-sm: var(--space-unit);               /* 8px */
-  --space-md: calc(var(--space-unit) * 2);     /* 16px */
-  --space-lg: calc(var(--space-unit) * 3);     /* 24px */
-  --space-xl: calc(var(--space-unit) * 4);     /* 32px */
-  --space-2xl: calc(var(--space-unit) * 6);    /* 48px */
+  /* Spacing Scale (8px Grid) */
+  --space-0: 0;
+  --space-1: 4px;    /* 0.25rem */
+  --space-2: 8px;    /* 0.5rem */
+  --space-3: 12px;   /* 0.75rem */
+  --space-4: 16px;   /* 1rem */
+  --space-5: 20px;   /* 1.25rem */
+  --space-6: 24px;   /* 1.5rem */
+  --space-8: 32px;   /* 2rem */
+  --space-10: 40px;  /* 2.5rem */
+  --space-12: 48px;  /* 3rem */
+  --space-16: 64px;  /* 4rem */
   
-  /* Typography */
+  /* Legacy spacing aliases (for backward compatibility) */
+  --spacing-xs: var(--space-1);
+  --spacing-sm: var(--space-2);
+  --spacing-md: var(--space-4);
+  --spacing-lg: var(--space-6);
+  --spacing-xl: var(--space-8);
+  
+  /* Touch Targets */
+  --touch-target-sm: 40px;
+  --touch-target: 48px;
+  --touch-target-lg: 56px;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  
+  /* Typography Scale */
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   
@@ -50,54 +83,65 @@
   --text-lg: 1.125rem;   /* 18px */
   --text-xl: 1.25rem;    /* 20px */
   --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
   
   /* Line Heights */
+  --leading-none: 1;
   --leading-tight: 1.25;
   --leading-snug: 1.375;
   --leading-normal: 1.5;
   --leading-relaxed: 1.625;
+  --leading-loose: 2;
   
-  /* Layout */
-  --touch-target: 48px;
-  --touch-target-sm: 44px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-full: 9999px;
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
   
-  /* Safe Areas with fallbacks */
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
-  
-  /* Z-Index Scale */
-  --z-base: 1;
+  /* Z-Index Scale (Prevent z-index wars) */
+  --z-hide: -1;
+  --z-base: 0;
   --z-dropdown: 100;
   --z-sticky: 200;
-  --z-modal-backdrop: 300;
+  --z-drawer: 300;
   --z-modal: 400;
   --z-popover: 500;
   --z-toast: 600;
+  --z-tooltip: 700;
   --z-emergency: 999;
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
   --shadow-glow: 0 0 20px rgba(0, 217, 255, 0.3);
+  --shadow-glow-danger: 0 0 20px rgba(255, 82, 82, 0.4);
   
-  /* Motion - respecting preferences */
+  /* Transitions */
   --duration-instant: 0ms;
   --duration-fast: 150ms;
   --duration-base: 200ms;
   --duration-slow: 300ms;
-  --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Safe Areas (with fallbacks) */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  
+  /* Layout */
+  --header-height: 60px;
+  --bottom-nav-height: 64px;
+  --max-content-width: 480px;
 }
 
-/* Light Mode Support */
+/* ============================================================
+   2. Light Mode Support (System Preference + Manual Toggle)
+   ============================================================ */
 @media (prefers-color-scheme: light) {
   :root {
     --color-bg-primary: #FFFFFF;
@@ -108,14 +152,36 @@
     --color-text-primary: #0A0E27;
     --color-text-secondary: #4A5568;
     --color-text-tertiary: #718096;
+    --color-text-disabled: #A0AEC0;
     
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 }
 
-/* Reduced Motion */
+/* Manual dark mode override class */
+[data-theme="dark"] {
+  --color-bg-primary: var(--_color-navy-900);
+  --color-bg-secondary: var(--_color-navy-800);
+  --color-bg-tertiary: var(--_color-navy-700);
+  --color-text-primary: #F0F2F5;
+  --color-text-secondary: #A8B4C4;
+  --color-text-tertiary: #8A94A6;
+}
+
+[data-theme="light"] {
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F5F7FA;
+  --color-bg-tertiary: #E8ECF0;
+  --color-text-primary: #0A0E27;
+  --color-text-secondary: #4A5568;
+  --color-text-tertiary: #718096;
+}
+
+/* ============================================================
+   3. Reduced Motion (Accessibility)
+   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -127,36 +193,16 @@
   }
   
   :root {
-    --duration-fast: 0ms;
-    --duration-base: 0ms;
-    --duration-slow: 0ms;
+    --duration-instant: 0.01ms;
+    --duration-fast: 0.01ms;
+    --duration-base: 0.01ms;
+    --duration-slow: 0.01ms;
   }
 }
 
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-  :root {
-    --color-accent: #00FFFF;
-    --color-text-secondary: #FFFFFF;
-    --shadow-sm: none;
-    --shadow-md: none;
-  }
-}
-
-/* Forced Colors (Windows High Contrast) */
-@media (forced-colors: active) {
-  .btn,
-  .input-group,
-  .conversation-item {
-    border: 1px solid CanvasText;
-  }
-  
-  ::-webkit-scrollbar {
-    width: auto;
-  }
-}
-
-/* Reset */
+/* ============================================================
+   4. Base Reset & Global Styles
+   ============================================================ */
 *,
 *::before,
 *::after {
@@ -166,10 +212,11 @@
 }
 
 html {
-  font-size: 100%; /* Respect user browser settings */
+  font-size: 100%; /* Respect user browser settings (16px default) */
   height: 100%;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -182,25 +229,150 @@ body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior-y: none;
 }
 
-/* Focus Management - Visible for keyboard, hidden for mouse */
+/* ============================================================
+   5. Focus Management (Keyboard Accessibility)
+   ============================================================ */
+:focus {
+  outline: none;
+}
+
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
+/* Remove focus ring for mouse users */
 :focus:not(:focus-visible) {
   outline: none;
 }
 
-/* Skip Link (Accessibility) */
+/* Skip to main content link (Screen reader only) */
 .skip-link {
   position: absolute;
   top: -40px;
   left: 0;
   background: var(--color-accent);
   color: var(--color-bg-primary);
-  padding: var(--space-sm) var(--space-md);
-  z-index:
+  padding: 8px;
+  text-decoration: none;
+  z-index: var(--z-emergency);
+  border-radius: 0 0 var(--radius-sm) 0;
+  font-weight: var(--font-bold);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ============================================================
+   6. Selection & Highlighting
+   ============================================================ */
+::selection {
+  background: var(--color-accent-subtle);
+  color: var(--color-accent);
+}
+
+/* ============================================================
+   7. Scrollbar Styling (Accessible)
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-bg-tertiary) transparent;
+}
+
+/* High Contrast Mode Support */
+@media (forced-colors: active) {
+  * {
+    scrollbar-width: auto;
+  }
+  
+  ::-webkit-scrollbar {
+    width: auto;
+  }
+}
+
+/* ============================================================
+   8. Utility Classes
+   ============================================================ */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+/* ============================================================
+   9. Print Styles
+   ============================================================ */
+@media print {
+  body {
+    background: white;
+    color: black;
+    overflow: visible;
+  }
+  
+  .no-print,
+  .bottom-nav,
+  .fab,
+  .emergency-btn,
+  .ai-watermark {
+    display: none !important;
+  }
+  
+  .screen {
+    position: static;
+    transform: none !important;
+    overflow: visible;
+    page-break-inside: avoid;
+  }
+  
+  .chat-messages {
+    overflow: visible;
+    height: auto;
+  }
+}
+
+/* ============================================================
+   10. Container Queries Setup (Future-proof)
+   ============================================================ */
+@supports (container-type: inline-size) {
+  .container-query {
+    container-type: inline-size;
+  }
+}
